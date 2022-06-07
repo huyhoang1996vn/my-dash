@@ -1,0 +1,32 @@
+name: learn-github-actions #name workflow
+on: [push]
+jobs:
+  install-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2.3.1
+      - run: python -V
+  
+  ssh-remote-server:
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: | # run with multiple script
+            cd /home/team
+            git clone https://github.com/tcgvn-steve/my-dash
+            cd my-dash
+            git pull origin master
+            ls -a
+            docker-compose -f docker-compose.yml up -d --build --force-recreate
+            docker ps
+    - run: ls -a
+    - uses: actions/checkout@v2
+    - run: ls -a
+    - run: docker ps
+    
